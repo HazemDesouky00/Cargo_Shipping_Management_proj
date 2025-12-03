@@ -1,0 +1,98 @@
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const { db } = require('../db.js');
+
+// function for JWT
+const signToken = (userId, role) =>
+     {return jwt.sign({ id: userId, role }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES_IN });
+};
+
+//signup
+const register = (req, res) => {
+    const { name, email, password } = req.body;
+
+    if (!name || !email || !password) {
+        return res.status(400).json({ message: "Please provide name, email and password." });
+    }
+
+    // Hash password
+    bcrypt.hash(password, 10, (err, hashedPassword) => {
+        if (err) {
+            console.error(err);
+            return res.status(500).json({ message: "Error hashing password." });
+        }
+
+        const query = `
+            INSERT INTO USER (NAME, EMAIL, PASSWORDHASH, ROLE)
+            VALUES (?, ?, ?, 'USER')
+        `;
+
+        db.run(query, [name, email, hashedPassword], function (err) {
+            if (err) {
+                if (err.message.includes("UNIQUE")) {
+                    return res.status(400).json({ message: "Email already exists." });
+                }
+                console.error(err);
+                return res.status(500).json({ message: "Database error." });
+            }
+
+            return res.status(201).json({
+                message: "User registered successfully.",
+                userId: this.lastID
+            });
+        });
+    });
+};
+
+//login
+const login = (req, res) => {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+        return res.status(400).json({ message: "Please provide email and password." });
+    }
+
+    const query = `SELECT * FROM USER WHERE EMAIL = ?`;
+
+    db.get(query, [email], (err, user) => {
+        if (err) {
+            console.error(err);
+            return res.status(500).json({ message: "Database error." });
+        }
+
+        if (!user) {
+            return res.status(404).json({ message: "User not found." });
+        }
+
+        // Compare password
+        bcrypt.compare(password, user.PASSWORDHASH, (err, isMatch) => {
+            if (err) {
+                console.error(err);
+                return res.status(500).json({ message: "Error verifying password." });
+            }
+
+            if (!isMatch) {
+                return res.status(400).json({ message: "Invalid password." });
+            }
+
+            // Create JWT
+            const token = signToken(user.ID, user.ROLE);
+
+            return res.status(200).json({
+                message: "Login successful.",
+                user: {
+                    id: user.ID,
+                    name: user.NAME,
+                    email: user.EMAIL,
+                    role: user.ROLE
+                },
+                token
+            });
+        });
+    });
+};
+
+module.exports = {
+    register,
+    login
+};
