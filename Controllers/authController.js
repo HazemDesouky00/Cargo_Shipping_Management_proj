@@ -1,6 +1,6 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const { db } = require('../db.js');
+const { db } = require('../Models/db.js');
 
 // function for JWT
 const signToken = (userId, role) =>
