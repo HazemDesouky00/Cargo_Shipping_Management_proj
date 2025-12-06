@@ -1,10 +1,10 @@
-const { app } = require ('./index');
-const db_access = require ('./db.js');
+const { app } = require('./index');
+const db_access = require('./db.js');
 const db = db_access.db;
-
 
 const PORT = 3000;
 
+// Create tables on startup
 db.serialize(() => {
     db.run(db_access.createUserTable, (err) => {
         if (err) console.log("Error creating User table:", err.message);
@@ -15,7 +15,7 @@ db.serialize(() => {
     });
 
     db.run(db_access.createStatusHistoryTable, (err) => {
-        if (err) console.log("Error creating StatusHistory table:", err.message);
+        if (err) console.log("Error creating Status History table:", err.message);
     });
 });
 

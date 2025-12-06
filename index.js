@@ -1,20 +1,27 @@
 const express = require('express');
-const app = express();
-
-const adminRouter = require('./routes/adminRouter');
-const authRouter = require('./routes/authRouter');
-const shipmentRouter = require('./routes/shipmentRouter');
-const userRouter = require('./routes/userRouter');
-
-
 const dotenv = require('dotenv');
+const cookieParser = require('cookie-parser');
+
 dotenv.config();
 
-app.use(express.json());
+const app = express();
 
+// Routers
+const authRouter = require('./Routes/authRouter');
+const userRouter = require('./Routes/userRouter');
+const shipmentRouter = require('./Routes/shipmentRouter');
+const adminRouter = require('./Routes/adminRouter');
+const statusHistoryRouter = require('./Routes/statusHistoryRouter');
+
+// Middleware
+app.use(express.json());
+app.use(cookieParser());
+
+// Route mounting n usage
 app.use('/auth', authRouter);
 app.use('/users', userRouter);
 app.use('/shipments', shipmentRouter);
 app.use('/admin', adminRouter);
+app.use('/history', statusHistoryRouter);
 
 module.exports = { app };
