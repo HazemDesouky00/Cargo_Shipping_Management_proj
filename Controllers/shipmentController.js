@@ -1,13 +1,41 @@
 const { db } = require('../Models/db.js');
 const generateTrackingNumber = require('../Utils/generateTrackingNumber');  
 
+//token thats alreay in authmiddleware so thinking of leaving it 
+const verifyToken = (req, res, next) => {
+    const authHeader = req.headers.authorization;
 
-// ====================================
-// CREATE SHIPMENT
-// ====================================
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return res.status(401).json({ message: "No token provided." });
+    }
+
+    const token = authHeader.split(' ')[1];
+
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+        req.user = {
+            id: decoded.id,
+            name: decoded.name,
+            role: decoded.role
+        };
+
+        next();
+    } catch (err) {
+        console.error(err);
+        return res.status(401).json({ message: "Invalid or expired token." });
+    }
+};
+
+//up until here (for the verify token)
+
+
+//create shipment
 const createShipment = (req, res) => {
+    
     const senderId = req.user.id;   // comes from verifyToken
     const {
+        //senderId, //not needed keeping it for my sake
         receiverId,
         originCountry,
         destinationCountry,
@@ -23,6 +51,7 @@ const createShipment = (req, res) => {
 
     // Generate tracking number
     const trackingNumber = generateTrackingNumber();
+
 
     const query = `
         INSERT INTO SHIPMENT 
@@ -57,12 +86,14 @@ const createShipment = (req, res) => {
 };
 
 
-// ====================================
-// GET SHIPMENTS CREATED BY USER
-// ====================================
+//get shipments created by user 
 // Get shipments created by user whether thats sender or receiever 
 const getUserShipments = (req, res) => {
     const userId = req.user.id;
+
+   /*SELECT NAME FROM USER 
+   WHERE SENDERID=SENDERID
+   */
 
     const query = `
         SELECT * FROM SHIPMENT
@@ -111,3 +142,15 @@ module.exports = {
     getUserShipments,
     getShipmentByTrackingNumber
 };
+
+
+/* {
+    "senderId":23 ,
+ "receiverId":1 ,
+        "originCountry": "egypt",
+        "destinationCountry": "UAE",
+        "weight":231,
+        "size": "MEDIUM",
+        "deliveryType": "STANDARD"
+ }
+*/

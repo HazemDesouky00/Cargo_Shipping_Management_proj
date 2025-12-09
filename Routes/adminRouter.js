@@ -19,13 +19,14 @@ adminRouter.get('/shipments', verifyToken, requireAdmin, getAllShipments);
 // Approve a shipment (ADMIN ONLY)
 // it will look like this  PUT /admin/shipments/:id/approve
 
-adminRouter.put('/shipments/:id/approve', verifyToken, requireAdmin, approveShipment);
+
+//adminRouter.put('/shipments/:id/approve', verifyToken, requireAdmin, approveShipment);
 
 
 // Reject a shipment (ADMIN ONLY)
 // it will be like this PUT /admin/shipments/:id/reject
 
-adminRouter.put('/shipments/:id/reject', verifyToken, requireAdmin, rejectShipment);
+//adminRouter.put('/shipments/:id/reject', verifyToken, requireAdmin, rejectShipment);
 
 // Update shipment status + log history
 // it will be like this PUT /admin/shipments/:id/status

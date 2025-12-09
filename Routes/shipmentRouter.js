@@ -12,7 +12,7 @@ const shipmentRouter = express.Router();
 
 
 // Create shipment (USER)
-shipmentRouter.post('/create', verifyToken, createShipment);
+shipmentRouter.post('/create',verifyToken, createShipment); //verifyToken
 
 // Get all shipments for logged-in user
 shipmentRouter.get('/mine', verifyToken, getUserShipments);

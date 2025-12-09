@@ -1,9 +1,8 @@
 const { db } = require('../Models/db.js');
 
 
-// ====================================
+
 // Get full tracking history by tracking number
-// ====================================
 const getStatusHistory = (req, res) => {
     const { trackingNumber } = req.params;
 

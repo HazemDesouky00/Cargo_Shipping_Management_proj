@@ -3,8 +3,8 @@ const jwt = require('jsonwebtoken');
 const { db } = require('../Models/db.js');
 
 // function for JWT
-const signToken = (userId, role) =>
-     {return jwt.sign({ id: userId, role }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES_IN });
+const signToken = (userId, name ,role) =>
+     {return jwt.sign({ id: userId ,role }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES_IN });
 };
 
 //signup
@@ -105,3 +105,10 @@ module.exports = {
     login,
     
 };
+
+
+
+    //  { "name":"hazem",
+    //   "email":"h@outlook.com",
+    //    "password": "123" } 
+
