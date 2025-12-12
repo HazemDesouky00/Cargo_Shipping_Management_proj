@@ -1,10 +1,16 @@
 const express = require('express');
 const dotenv = require('dotenv');
 const cookieParser = require('cookie-parser');
+const cors =  require('cors');
 
 dotenv.config();
 
 const app = express();
+
+app.use(cors({
+    origin: "http://localhost:5500", // port number of front end 
+    credentials: true  
+}))
 
 // Routers
 const authRouter = require('./Routes/authRouter');
